@@ -27,13 +27,6 @@
 
         <dependency>
             <groupId>com.reportit</groupId>
-            <artifactId>reportit-service</artifactId>
-            <version>0.0.1-SNAPSHOT</version>
-            <scope>compile</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>com.reportit</groupId>
             <artifactId>reportit-config</artifactId>
             <version>0.0.1-SNAPSHOT</version>
             <scope>compile</scope>
