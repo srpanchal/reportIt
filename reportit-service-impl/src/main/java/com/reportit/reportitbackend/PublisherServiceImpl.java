@@ -14,7 +14,7 @@ import java.net.URL;
 
 @Service
 @Slf4j
-public class TwitterServiceImpl implements TwitterService {
+public class PublisherServiceImpl implements PublisherService {
 
   @Autowired
   private Twitter twitter;
