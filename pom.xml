@@ -8,7 +8,10 @@
 		<module>reportit-rest-web</module>
 		<module>reportit-repository</module>
 		<module>reportit-service</module>
-	</modules>
+		<module>reportit-service-impl</module>
+        <module>reportit-config</module>
+    </modules>
+
     <parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
