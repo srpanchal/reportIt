@@ -8,7 +8,6 @@
 		<module>reportit-rest-web</module>
 		<module>reportit-repository</module>
 		<module>reportit-service</module>
-		<module>reportit-service-impl</module>
         <module>reportit-config</module>
     </modules>
 
