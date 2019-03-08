@@ -8,7 +8,6 @@
 		<module>reportit-rest-web</module>
 		<module>reportit-repository</module>
 		<module>reportit-service</module>
-		<module>reportit-service-impl</module>
         <module>reportit-config</module>
     </modules>
 
@@ -51,12 +50,18 @@
 			<scope>provided</scope>
 		</dependency>
 
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-security</artifactId>
-		</dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-security</artifactId>
+        </dependency>
 
-	</dependencies>
+        <dependency>
+            <groupId>org.springframework.security.oauth</groupId>
+            <artifactId>spring-security-oauth2</artifactId>
+            <version>2.3.5.RELEASE</version>
+        </dependency>
+
+    </dependencies>
 
 	<build>
 		<plugins>
