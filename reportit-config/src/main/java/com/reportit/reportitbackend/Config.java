@@ -15,7 +15,7 @@ import java.util.Properties;
 public class Config {
 
   @Bean
-  private Twitter twitter(){
+  public Twitter twitter(){
     ConfigurationBuilder cb = new ConfigurationBuilder();
     cb.setDebugEnabled(true)
         .setOAuthConsumerKey("-")
@@ -28,7 +28,7 @@ public class Config {
   }
 
   @Bean
-  private Session emailSession(){
+  public Session emailSession(){
     Properties prop = new Properties();
     prop.put("mail.smtp.auth", true);
     prop.put("mail.smtp.starttls.enable", "true");

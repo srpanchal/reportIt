@@ -33,6 +33,13 @@
         </dependency>
 
         <dependency>
+            <groupId>com.reportit</groupId>
+            <artifactId>reportit-config</artifactId>
+            <version>0.0.1-SNAPSHOT</version>
+            <scope>compile</scope>
+        </dependency>
+
+        <dependency>
             <groupId>org.twitter4j</groupId>
             <artifactId>twitter4j-stream</artifactId>
             <version>4.0.6</version>
