@@ -1,5 +1,8 @@
-package com.reportit.reportitbackend;
+package com.reportit.reportitbackend.impl;
 
+import com.reportit.reportitbackend.Issue;
+import com.reportit.reportitbackend.IssueRepository;
+import com.reportit.reportitbackend.IssueService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
