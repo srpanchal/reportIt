@@ -34,7 +34,7 @@ public class PublisherServiceImpl implements PublisherService {
     boolean isSent = false;
     try {
       File file = new File("temp.jpeg");
-      FileUtils.copyURLToFile(new URL(imageUrl), file, 10000, 1000);
+      FileUtils.copyURLToFile(new URL(imageUrl), file, 40000, 40000);
       StatusUpdate status = new StatusUpdate(tweet);
       status.setMedia(file);
       twitter.updateStatus(status);
@@ -50,14 +50,14 @@ public class PublisherServiceImpl implements PublisherService {
     boolean sent = false;
     try {
       Message message = new MimeMessage(emailSession);
-      message.setFrom(new InternetAddress("from@gmail.com"));
-      message.setRecipients(Message.RecipientType.TO, InternetAddress.parse("to@gmail.com"));
-      message.setSubject("Mail Subject");
+      message.setFrom(new InternetAddress(fromEmail));
+      message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(toEmail));
+      message.setSubject(subject);
       File file = new File("temp_mail.jpeg");
-      FileUtils.copyURLToFile(new URL(imageUrl), file, 10000, 1000);
+      FileUtils.copyURLToFile(new URL(imageUrl), file, 40000, 40000);
       MimeBodyPart mimeBodyPart = new MimeBodyPart();
       mimeBodyPart.setContent(content, "text/html");
-      mimeBodyPart.attachFile(new File("path/to/file"));
+      mimeBodyPart.attachFile(file);
       Multipart multipart = new MimeMultipart();
       multipart.addBodyPart(mimeBodyPart);
       message.setContent(multipart);
@@ -68,6 +68,5 @@ public class PublisherServiceImpl implements PublisherService {
     }
     return sent;
   }
-
 
 }
