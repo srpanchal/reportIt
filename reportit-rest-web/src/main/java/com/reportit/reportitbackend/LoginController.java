@@ -44,7 +44,6 @@ public class LoginController {
         .isAssignableFrom(type.resolveGenerics()[0])) {
       clientRegistrations = (Iterable<ClientRegistration>) clientRegistrationRepository;
     }
-
     clientRegistrations.forEach(registration -> oauth2AuthenticationUrls
         .put(registration.getClientName(),
             authorizationRequestBaseUri + "/" + registration.getRegistrationId()));
@@ -74,7 +73,6 @@ public class LoginController {
       Map userAttributes = response.getBody();
       model.addAttribute("name", userAttributes.get("name"));
     }
-
     return "dashboard";
   }
 

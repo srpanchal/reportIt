@@ -21,6 +21,11 @@ public class IssueController {
     @Autowired
     private IssueService issueService;
 
+  @RequestMapping(method = RequestMethod.GET, value = "/test")
+  public boolean test() {
+    return true;
+  }
+
     @RequestMapping(method = RequestMethod.POST, value = "/save",
             produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
     public void saveIssue(@RequestBody Issue issue){

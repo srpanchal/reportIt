@@ -19,9 +19,6 @@ class SecurityConfig extends WebSecurityConfigurerAdapter {
             "/login"
     };
 
-  private static String CLIENT_PROPERTY_KEY
-      = "spring.security.oauth2.client.registration.";
-
   @Override
     protected void configure(HttpSecurity http) throws Exception {
         http.authorizeRequests()
