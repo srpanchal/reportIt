@@ -21,4 +21,5 @@ public class LoginDto implements Serializable{
     private String phoneNo;
     private String location;
     private String userId;
+    private String gcmToken;
 }

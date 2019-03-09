@@ -60,7 +60,7 @@ public class UserServiceImpl implements UserService {
   }
 
   @Override
-  public String signupUser(String username, String password) {
+  public String signupUser(String username, String password, String email, String phoneNo, String location,String gcmToken) {
     User user = userRepository.findByUserName(username);
     if(user != null){
       return null;
@@ -68,6 +68,9 @@ public class UserServiceImpl implements UserService {
     user = new User();
     user.setUserName(username);
     user.setPassword(password);
+    user.setFCMToken(gcmToken);
+    user.setEmail(email);
+    user.setPhoneNo(phoneNo);
     user = userRepository.save(user);
     return user.getId();
   }
