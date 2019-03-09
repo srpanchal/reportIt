@@ -1,5 +1,6 @@
 package com.reportit.reportitbackend;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -11,6 +12,7 @@ import java.util.List;
 
 
 @RestController
+@Slf4j
 @RequestMapping(value = (IssueController.BASE_PATH))
 public class IssueController {
 
