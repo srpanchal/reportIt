@@ -3,7 +3,6 @@ package com.reportit.reportitbackend.impl;
 import com.reportit.reportitbackend.Issue;
 import com.reportit.reportitbackend.PublisherService;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.io.FileUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -24,8 +23,6 @@ import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
 import java.io.File;
-import java.io.IOException;
-import java.net.URL;
 import java.util.List;
 
 @Service
@@ -42,20 +39,33 @@ public class PublisherServiceImpl implements PublisherService {
     private static final String FIREBASE_API_URL = "https://fcm.googleapis.com/fcm/send";
 
   @Override
-  public String sendTweet(String tweet, String imagePath) {
+  public void sendTweet(String tweet, String imagePath) {
+      log.info("Tweeting: " + tweet + " image: " + imagePath);
     String tweetURL = null;
     try {
       File file = new File(imagePath);
       StatusUpdate status = new StatusUpdate(tweet);
       status.setMedia(file);
-      tweetURL = twitter.updateStatus(status).getMediaEntities()[0].getExpandedURL();
+      twitter.updateStatus(status);
     } catch (TwitterException e) {
       log.error("Failed to send tweet {} , imagePath : {}", tweet, imagePath, e);
     }
-    return tweetURL;
   }
 
-  @Override
+    @Override
+    public String createTweet(Issue issue, List<String> tweeterHandles) {
+        StringBuilder str = new StringBuilder();
+        str.append("Issue Reported: ").append(issue.getTitle()).append("\n")
+                .append(issue.getDescription()).append("\n")
+                .append("Location: ").append(issue.getAddress()).append("\n")
+                .append("Votes: ").append(issue.getVotes()).append("\n")
+                .append("Category: ").append(issue.getCategory()).append("\n")
+                .append("Please help in resolving this issue.").append("\n");
+        tweeterHandles.forEach(t -> str.append("@").append(t).append(" "));
+        return str.toString();
+    }
+
+    @Override
   public boolean sendEmailWithAttachment(String toEmail, String fromEmail, String subject,
       String content, String imagePath) {
     boolean sent = false;
@@ -80,18 +90,6 @@ public class PublisherServiceImpl implements PublisherService {
   }
 
     @Override
-    public String createTweet(Issue issue) {
-        StringBuilder str = new StringBuilder();
-        str.append(issue.getTitle()).append("\n")
-                .append(issue.getDescription()).append("\n")
-                .append("Location: ").append(issue.getAddress()).append("\n")
-                .append("Votes: ").append(issue.getVotes()).append("\n")
-                .append("Category: ").append(issue.getCategory()).append("\n")
-                .append("Please help in resolving this issue.").append("\n");
-        return str.toString();
-    }
-
-    @Override
   public String sendPushNotifications(String title, String message, List<String> tokens) {
     RestTemplate restTemplate = new RestTemplate();
     HttpHeaders httpHeaders = new HttpHeaders();
@@ -114,7 +112,6 @@ public class PublisherServiceImpl implements PublisherService {
     String response = restTemplate.postForObject(FIREBASE_API_URL, httpEntity, String.class);
     return response;
   }
-
 
 
 }
