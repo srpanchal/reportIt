@@ -4,7 +4,12 @@ import com.reportit.reportitbackend.PublisherService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
+import twitter4j.JSONException;
+import twitter4j.JSONObject;
 import twitter4j.StatusUpdate;
 import twitter4j.Twitter;
 import twitter4j.TwitterException;
@@ -20,6 +25,7 @@ import javax.mail.internet.MimeMultipart;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
+import java.util.List;
 
 @Service
 @Slf4j
@@ -30,6 +36,9 @@ public class PublisherServiceImpl implements PublisherService {
 
   @Autowired
   private Session emailSession;
+
+  private static final String FIREBASE_SERVER_KEY = "AIzaSyD5amGeJnupzGXUF8SskKTMVTcl4bcVtE4";
+  private static final String FIREBASE_API_URL = "https://fcm.googleapis.com/fcm/send";
 
   public String sendTweet(String tweet, String imageUrl) {
     String tweetURL = null;
@@ -67,5 +76,28 @@ public class PublisherServiceImpl implements PublisherService {
       log.error("Failed to send email to {}", toEmail, e);
     }
     return sent;
+  }
+
+  public String sendPushNotifications(String title, String message, List<String> tokens) {
+    RestTemplate restTemplate = new RestTemplate();
+    HttpHeaders httpHeaders = new HttpHeaders();
+    httpHeaders.set("Authorization", "key=" + FIREBASE_SERVER_KEY);
+    httpHeaders.set("Content-Type", "application/json");
+    JSONObject msg = new JSONObject();
+    JSONObject json = new JSONObject();
+    try {
+      msg.put("title", title);
+      msg.put("body", message);
+      msg.put("notificationType", "Test");
+
+      json.put("data", msg);
+      json.put("registration_ids", tokens);
+    } catch (JSONException e) {
+      log.error("Failed to send push notification", e);
+    }
+
+    HttpEntity<String> httpEntity = new HttpEntity<>(json.toString(), httpHeaders);
+    String response = restTemplate.postForObject(FIREBASE_API_URL, httpEntity, String.class);
+    return response;
   }
 }
