@@ -30,7 +30,9 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -133,7 +135,7 @@ public class IssueController {
     issue.setLocation(new GeoJsonPoint(issueModel.getLongitude(), issueModel.getLatitude()));
     issueService.saveIssue(issue);
     userService.addReportedIssue(issueModel.getUserId(), issue);
- //   userService.getFCMTokensOfNearbyUsers(issue.getLocation(), userProximity);
+    userService.getFCMTokensOfNearbyUsers(issue.getLocation(), userProximity);
   }
 
   @RequestMapping(method = RequestMethod.GET, value = "/get/nearest", produces =
@@ -146,19 +148,23 @@ public class IssueController {
   }
 
   @PostMapping("/uploadFile")
-  public String singleFileUpload( @RequestParam("file") MultipartFile file){
-      int imageCode = UUID.randomUUID().hashCode();
+  public String multipleFileUpload( @RequestBody Map<String, MultipartFile> files){
+      List<String> fileNames = new ArrayList<>();
 
-      try {
-          byte[] bytes=file.getBytes();
-          InputStream in = new ByteArrayInputStream(bytes);
-          BufferedImage bImageFromConvert = ImageIO.read(in);
-          ImageIO.write(bImageFromConvert, "jpg", new File(
-              imageDirectory+imageCode+".jpg"));
-      } catch (IOException e) {
-          e.printStackTrace();
+      for(MultipartFile file : files.values()) {
+          int imageCode = UUID.randomUUID().hashCode();
+
+          try {
+              byte[] bytes = file.getBytes();
+              InputStream in = new ByteArrayInputStream(bytes);
+              BufferedImage bImageFromConvert = ImageIO.read(in);
+              ImageIO.write(bImageFromConvert, "jpg", new File(imageDirectory + imageCode + ".jpg"));
+          } catch (IOException e) {
+              e.printStackTrace();
+          }
+          fileNames.add(imageCode + ".jpg");
       }
-        return  imageCode+".jpg";
+      return String.join(",",fileNames);
   }
 
   @RequestMapping(method = RequestMethod.GET, value = "/upvote")
