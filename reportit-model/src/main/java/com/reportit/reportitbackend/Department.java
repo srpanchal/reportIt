@@ -5,10 +5,13 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.CreatedBy;
 import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.annotation.Version;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -19,6 +22,11 @@ import java.util.Map;
 @Document(collection = Department.COLLECTION_NAME_DEPARTMENT)
 public class Department {
     public static final String COLLECTION_NAME_DEPARTMENT = "department_collection";
+
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    private String id;
 
     @Version
     private Long version;

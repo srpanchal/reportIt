@@ -6,6 +6,8 @@ import com.reportit.reportitbackend.DepartmentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class DepartmentServiceImpl implements DepartmentService{
 
@@ -15,5 +17,10 @@ public class DepartmentServiceImpl implements DepartmentService{
     @Override
     public void saveDepartment(Department department) {
         departmentRepository.save(department);
+    }
+
+    @Override
+    public List<Department> getAllDepartments() {
+        return departmentRepository.findAll();
     }
 }

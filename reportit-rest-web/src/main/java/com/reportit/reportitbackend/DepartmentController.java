@@ -8,6 +8,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
+
 
 @RestController
 @Slf4j
@@ -25,4 +27,10 @@ public class DepartmentController {
         departmentService.saveDepartment(department);
     }
 
+
+    @RequestMapping(method = RequestMethod.GET, value = "/getAll",
+        produces = MediaType.APPLICATION_JSON_VALUE)
+    public List<Department> getAllIssues(){
+        return departmentService.getAllDepartments();
+    }
 }
