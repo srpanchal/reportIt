@@ -6,6 +6,7 @@ import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
+import java.util.Objects;
 
 @RestController
 @Slf4j
@@ -49,9 +51,18 @@ public class UserController {
     @PostMapping("/login")
     public LoginDto login(@RequestBody  LoginDto loginDto){
       String userId =  userService.loginUser(loginDto.getUsername(), loginDto.getPassword());
-      loginDto.setUserId(userId);
+      handleStatusCode(loginDto, userId);
+
       return loginDto;
     }
+
+  private void handleStatusCode(@RequestBody LoginDto loginDto, String userId) {
+    if(Objects.nonNull(userId)) {
+      loginDto.setUserId(userId);
+    } else {
+      loginDto.setStatusCode(204);
+    }
+  }
 
   @PostMapping("/signup")
   public LoginDto signup(@RequestBody LoginDto loginDto){
