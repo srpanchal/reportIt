@@ -76,14 +76,20 @@ public class IssueServiceImpl implements IssueService {
         Issue issue = mongoOperations.findAndModify(
                 query, update,
                 new FindAndModifyOptions().returnNew(true), Issue.class);
-        if(issue.getVotes() == upvotesLimit){
+        if(issue.getVotes() >= upvotesLimit){
             //tweet/email
             List<Department> departments = departmentService.getByCategoryAndRegion(issue.getCategory(), issue.getAddress());
-            if(!CollectionUtils.isEmpty(departments)){
+            if(!CollectionUtils.isEmpty(departments) && !CollectionUtils.isEmpty(issue.getImages())){
                 List<String> tweeterHandles = departments.stream().map(d -> d.getContactInfo()
                         .get(PlatformEnum.TWITTER)).filter(Objects::nonNull)
                         .collect(Collectors.toList());
-                publisherService.sendTweet(publisherService.createTweet(issue, tweeterHandles), issue.getImages().get(0));
+                String tweet = publisherService.createTweet(issue, tweeterHandles);
+                publisherService.sendTweet(tweet, issue.getImages().get(0));
+                List<String> emailIds = departments.stream().map(d -> d.getContactInfo()
+                        .get(PlatformEnum.EMAIL)).filter(Objects::nonNull)
+                        .collect(Collectors.toList());
+                publisherService.sendEmailWithAttachment(String.join(",", emailIds),
+                        "report.it.pls@gmail.com", "ReportIt Issue", tweet, issue.getImages().get(0));
             }
         }
         return issue.getVotes();
