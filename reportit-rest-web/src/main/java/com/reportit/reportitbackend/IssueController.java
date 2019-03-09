@@ -52,7 +52,7 @@ public class IssueController {
             try {
                 InputStream in = new ByteArrayInputStream(bytes);
                 BufferedImage bImageFromConvert = ImageIO.read(in);
-                String path = "images/" + issueModel.getTitle() + RandomStringUtils.random(10);
+                String path = "/opt/images/" + issueModel.getTitle() + RandomStringUtils.random(10);
                 ImageIO.write(bImageFromConvert, "jpg", new File(path));
                 issue.getImages().add(path);
             } catch (IOException e) {
