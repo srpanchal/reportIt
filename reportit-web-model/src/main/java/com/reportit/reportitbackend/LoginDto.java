@@ -22,4 +22,5 @@ public class LoginDto implements Serializable{
     private String phoneNo;
     @NonNull
     private String location;
+    private String userId;
 }

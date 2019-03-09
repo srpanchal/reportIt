@@ -47,13 +47,17 @@ public class UserController {
     }
 
     @PostMapping("/login")
-    public String login(@RequestBody  LoginDto loginDto){
-      return userService.loginUser(loginDto.getUsername(), loginDto.getPassword());
+    public LoginDto login(@RequestBody  LoginDto loginDto){
+      String userId =  userService.loginUser(loginDto.getUsername(), loginDto.getPassword());
+      loginDto.setUserId(userId);
+      return loginDto;
     }
 
   @PostMapping("/signup")
-  public String signup(@RequestBody LoginDto loginDto){
-    return userService.signupUser(loginDto.getUsername(), loginDto.getPassword());
+  public LoginDto signup(@RequestBody LoginDto loginDto){
+     String userId = userService.signupUser(loginDto.getUsername(), loginDto.getPassword());
+     loginDto.setUserId(userId);
+     return loginDto;
   }
 
 }
