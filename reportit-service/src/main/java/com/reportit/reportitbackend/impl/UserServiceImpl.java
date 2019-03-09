@@ -77,4 +77,9 @@ public class UserServiceImpl implements UserService {
     return userRepository.findByLocationNear(location, new Distance(distance, Metrics.KILOMETERS)).stream().map(User::getFCMToken).collect(
         Collectors.toList());
   }
+
+  @Override
+  public void updateUserLocation(String userId, String location) {
+
+  }
 }

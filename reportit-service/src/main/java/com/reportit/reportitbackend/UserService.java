@@ -12,4 +12,5 @@ public interface UserService {
     String loginUser(String username, String password);
     String signupUser(String username, String password);
     List<String> getFCMTokensOfNearbyUsers(GeoJsonPoint location, double distance);
+    void updateUserLocation(String userId, String location);
 }

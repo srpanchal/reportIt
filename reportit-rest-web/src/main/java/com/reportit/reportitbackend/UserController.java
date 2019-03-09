@@ -60,4 +60,10 @@ public class UserController {
      return loginDto;
   }
 
+  @PostMapping("/updateUserLocation")
+  public LoginDto updateUserLocation(@RequestBody LoginDto loginDto){
+    userService.updateUserLocation(loginDto.getUserId(), loginDto.getLocation());
+    return loginDto;
+  }
+
 }
