@@ -84,7 +84,7 @@ public class IssueServiceImpl implements IssueService {
         Issue issue = mongoOperations.findAndModify(
                 query, update,
                 new FindAndModifyOptions().returnNew(true), Issue.class);
-        if(issue.getVotes() >= upvotesLimit){
+        if(issue.getVotes() == upvotesLimit){
             //tweet/email
             List<Department> departments = departmentService.getByCategoryAndRegion(issue.getCategory(), issue.getAddress());
             if(!CollectionUtils.isEmpty(departments) && !CollectionUtils.isEmpty(issue.getImages())){

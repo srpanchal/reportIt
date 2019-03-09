@@ -128,11 +128,11 @@ public class IssueController {
 
   @RequestMapping(method = RequestMethod.POST, value = "/save", produces =
       MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
-  public void saveIssue(@RequestBody Issue issue, @RequestParam("lat") double latitude,
-      @RequestParam("long") double longitude, @RequestParam String userId) {
-    issue.setLocation(new GeoJsonPoint(longitude, latitude));
+  public void saveIssue(@RequestBody IssueModel issueModel) {
+        Issue issue = convertToEntity(issueModel);
+    issue.setLocation(new GeoJsonPoint(issueModel.getLongitude(), issueModel.getLatitude()));
     issueService.saveIssue(issue);
-    userService.addReportedIssue(userId, issue);
+    userService.addReportedIssue(issueModel.getUserId(), issue);
  //   userService.getFCMTokensOfNearbyUsers(issue.getLocation(), userProximity);
   }
 
