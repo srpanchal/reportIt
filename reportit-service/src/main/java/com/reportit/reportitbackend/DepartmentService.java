@@ -7,4 +7,6 @@ public interface DepartmentService {
     void saveDepartment(Department department);
 
     List<Department> getAllDepartments();
+
+    List<Department> getByCategoryAndRegion(String category, String region);
 }

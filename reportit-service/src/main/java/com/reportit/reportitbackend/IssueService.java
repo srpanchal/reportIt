@@ -14,7 +14,7 @@ public interface IssueService {
 
     List<Issue> getAllIssuesByLocation(Point p, Distance d);
 
-    void upvote(String id);
+    long upvote(String id);
 
-    void downvote(String id);
+    long downvote(String id);
 }

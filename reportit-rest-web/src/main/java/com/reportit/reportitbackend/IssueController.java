@@ -137,7 +137,6 @@ public class IssueController {
 
   @RequestMapping(method = RequestMethod.POST, value = "/save", produces =
       MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
-  @ApiOperation(value = "save")
   public void saveIssue(@RequestBody Issue issue, @RequestParam("lat") double latitude,
       @RequestParam("long") double longitude, @RequestParam String userId) {
     issue.setLocation(new GeoJsonPoint(longitude, latitude));
@@ -157,13 +156,15 @@ public class IssueController {
 
   @RequestMapping(method = RequestMethod.GET, value = "/upvote")
   @ApiOperation(value = "upvote")
-    public void upvote(@RequestParam String id){
-        issueService.upvote(id);
+    public long upvote(@RequestParam String id){
+        return issueService.upvote(id);
   }
 
     @RequestMapping(method = RequestMethod.GET, value = "/downvote")
     @ApiOperation(value = "downvote")
-    public void downvote(@RequestParam String id){
-        issueService.downvote(id);
+    public long downvote(@RequestParam String id){
+        return issueService.downvote(id);
     }
+
+
 }

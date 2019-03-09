@@ -1,9 +1,13 @@
 package com.reportit.reportitbackend.impl;
 
+import com.reportit.reportitbackend.Department;
+import com.reportit.reportitbackend.DepartmentService;
 import com.reportit.reportitbackend.Issue;
 import com.reportit.reportitbackend.IssueRepository;
 import com.reportit.reportitbackend.IssueService;
+import com.reportit.reportitbackend.PublisherService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -15,6 +19,7 @@ import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 
 import java.util.List;
 
@@ -26,6 +31,15 @@ public class IssueServiceImpl implements IssueService {
 
     @Autowired
     private MongoOperations mongoOperations;
+
+    @Value("${upvotes.limit}")
+    private int upvotesLimit;
+
+    @Autowired
+    private DepartmentService departmentService;
+
+    @Autowired
+    private PublisherService publisherService;
 
     @Override
     public Issue saveIssue(Issue issue) {
@@ -46,28 +60,38 @@ public class IssueServiceImpl implements IssueService {
     }
 
     @Override
-    public void upvote(String id) {
+    public long upvote(String id) {
         Query query = new Query();
         query.addCriteria(Criteria.where("_id").is(id));
 
         Update update = new Update();
-        update.inc("upvotes");
+        update.inc("votes");
 
-        mongoOperations.findAndModify(
+        Issue issue = mongoOperations.findAndModify(
                 query, update,
                 new FindAndModifyOptions().returnNew(true), Issue.class);
+        if(issue.getVotes() > upvotesLimit){
+            //tweet/email
+            List<Department> departments = departmentService.getByCategoryAndRegion(issue.getCategory(), issue.getAddress());
+            if(!CollectionUtils.isEmpty(departments)){
+
+            }
+        }
+        return issue.getVotes();
     }
 
     @Override
-    public void downvote(String id) {
+    public long downvote(String id) {
         Query query = new Query();
         query.addCriteria(Criteria.where("_id").is(id));
 
         Update update = new Update();
-        update.inc("downvotes", 1);
+        update.inc("votes", -1);
 
-        mongoOperations.findAndModify(
+        Issue issue = mongoOperations.findAndModify(
                 query, update,
                 new FindAndModifyOptions().returnNew(true), Issue.class);
+
+        return issue.getVotes();
     }
 }

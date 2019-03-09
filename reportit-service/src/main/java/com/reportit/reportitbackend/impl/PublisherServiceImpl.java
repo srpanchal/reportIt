@@ -1,5 +1,6 @@
 package com.reportit.reportitbackend.impl;
 
+import com.reportit.reportitbackend.Issue;
 import com.reportit.reportitbackend.PublisherService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
@@ -37,35 +38,33 @@ public class PublisherServiceImpl implements PublisherService {
   @Autowired
   private Session emailSession;
 
-  private static final String FIREBASE_SERVER_KEY = "AIzaSyD5amGeJnupzGXUF8SskKTMVTcl4bcVtE4";
-  private static final String FIREBASE_API_URL = "https://fcm.googleapis.com/fcm/send";
+    private static final String FIREBASE_SERVER_KEY = "AIzaSyD5amGeJnupzGXUF8SskKTMVTcl4bcVtE4";
+    private static final String FIREBASE_API_URL = "https://fcm.googleapis.com/fcm/send";
 
   @Override
-  public String sendTweet(String tweet, String imageUrl) {
+  public String sendTweet(String tweet, String imagePath) {
     String tweetURL = null;
     try {
-      File file = new File("temp.jpeg");
-      FileUtils.copyURLToFile(new URL(imageUrl), file, 40000, 40000);
+      File file = new File(imagePath);
       StatusUpdate status = new StatusUpdate(tweet);
       status.setMedia(file);
       tweetURL = twitter.updateStatus(status).getMediaEntities()[0].getExpandedURL();
-    } catch (IOException | TwitterException e) {
-      log.error("Failed to send tweet {} , imageUrl : {}", tweet, imageUrl, e);
+    } catch (TwitterException e) {
+      log.error("Failed to send tweet {} , imagePath : {}", tweet, imagePath, e);
     }
     return tweetURL;
   }
 
   @Override
   public boolean sendEmailWithAttachment(String toEmail, String fromEmail, String subject,
-      String content, String imageUrl) {
+      String content, String imagePath) {
     boolean sent = false;
     try {
       Message message = new MimeMessage(emailSession);
       message.setFrom(new InternetAddress(fromEmail));
       message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(toEmail));
       message.setSubject(subject);
-      File file = new File("temp_mail.jpeg");
-      FileUtils.copyURLToFile(new URL(imageUrl), file, 40000, 40000);
+      File file = new File(imagePath);
       MimeBodyPart mimeBodyPart = new MimeBodyPart();
       mimeBodyPart.setContent(content, "text/html");
       mimeBodyPart.attachFile(file);
@@ -80,7 +79,19 @@ public class PublisherServiceImpl implements PublisherService {
     return sent;
   }
 
-  @Override
+    @Override
+    public String createTweet(Issue issue) {
+        StringBuilder str = new StringBuilder();
+        str.append(issue.getTitle()).append("\n")
+                .append(issue.getDescription()).append("\n")
+                .append("Location: ").append(issue.getAddress()).append("\n")
+                .append("Votes: ").append(issue.getVotes()).append("\n")
+                .append("Category: ").append(issue.getCategory()).append("\n")
+                .append("Please help in resolving this issue.").append("\n");
+        return str.toString();
+    }
+
+    @Override
   public String sendPushNotifications(String title, String message, List<String> tokens) {
     RestTemplate restTemplate = new RestTemplate();
     HttpHeaders httpHeaders = new HttpHeaders();
