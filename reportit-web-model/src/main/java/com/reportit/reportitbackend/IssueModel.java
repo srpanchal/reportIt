@@ -27,6 +27,6 @@ public class IssueModel implements Serializable {
     private StatusEnum status;
     private String category;
     private GeoJsonPoint location;
-    private int upvotes;
+    private long votes = 0L;
 
 }
