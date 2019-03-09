@@ -49,10 +49,16 @@
             <artifactId>mail</artifactId>
             <version>1.5.0-b01</version>
         </dependency>
-        <!--dependency>
+        <dependency>
             <groupId>com.filter.textcorrector</groupId>
             <artifactId>checkmate</artifactId>
-        </dependency-->
+            <exclusions>
+                <exclusion>
+                    <groupId>org.slf4j</groupId>
+                    <artifactId>slf4j-log4j12</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
         <dependency>
             <groupId>com.google.cloud</groupId>
             <artifactId>google-cloud-vision</artifactId>
