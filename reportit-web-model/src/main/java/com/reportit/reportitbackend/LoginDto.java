@@ -11,7 +11,7 @@ import java.io.Serializable;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class LoginDto implements Serializable{
+public class LoginDto extends ResponseModel implements Serializable{
 
     private static final long serialVersionUID = 112333L;
 

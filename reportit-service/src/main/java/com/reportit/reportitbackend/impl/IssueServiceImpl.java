@@ -5,7 +5,9 @@ import com.reportit.reportitbackend.DepartmentService;
 import com.reportit.reportitbackend.Issue;
 import com.reportit.reportitbackend.IssueRepository;
 import com.reportit.reportitbackend.IssueService;
+import com.reportit.reportitbackend.PlatformEnum;
 import com.reportit.reportitbackend.PublisherService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
@@ -22,8 +24,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
 import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 @Service
+@Slf4j
 public class IssueServiceImpl implements IssueService {
 
     @Autowired
@@ -71,11 +76,14 @@ public class IssueServiceImpl implements IssueService {
         Issue issue = mongoOperations.findAndModify(
                 query, update,
                 new FindAndModifyOptions().returnNew(true), Issue.class);
-        if(issue.getVotes() > upvotesLimit){
+        if(issue.getVotes() == upvotesLimit){
             //tweet/email
             List<Department> departments = departmentService.getByCategoryAndRegion(issue.getCategory(), issue.getAddress());
             if(!CollectionUtils.isEmpty(departments)){
-
+                List<String> tweeterHandles = departments.stream().map(d -> d.getContactInfo()
+                        .get(PlatformEnum.TWITTER)).filter(Objects::nonNull)
+                        .collect(Collectors.toList());
+                publisherService.sendTweet(publisherService.createTweet(issue, tweeterHandles), issue.getImages().get(0));
             }
         }
         return issue.getVotes();
