@@ -6,7 +6,7 @@ import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -46,14 +46,14 @@ public class UserController {
         userService.addReportedIssue(userId, issueId);
     }
 
-    @GetMapping("/login")
-    public String login(@RequestParam String username, @RequestParam String password){
-      return userService.loginUser(username, password);
+    @PostMapping("/login")
+    public String login(@RequestBody  LoginDto loginDto){
+      return userService.loginUser(loginDto.getUsername(), loginDto.getPassword());
     }
 
-  @GetMapping("/signup")
-  public String signup(@RequestParam String username, @RequestParam String password){
-    return userService.signupUser(username, password);
+  @PostMapping("/signup")
+  public String signup(@RequestBody LoginDto loginDto){
+    return userService.signupUser(loginDto.getUsername(), loginDto.getPassword());
   }
 
 }
