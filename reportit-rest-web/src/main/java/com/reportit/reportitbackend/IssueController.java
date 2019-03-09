@@ -1,9 +1,17 @@
 package com.reportit.reportitbackend;
 
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.RandomStringUtils;
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.List;
+import java.util.UUID;
+import java.util.stream.Collectors;
+
+import javax.imageio.ImageIO;
+
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -14,6 +22,7 @@ import org.springframework.data.geo.Metrics;
 import org.springframework.data.geo.Point;
 import org.springframework.data.mongodb.core.geo.GeoJsonPoint;
 import org.springframework.http.MediaType;
+import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -22,16 +31,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.imageio.ImageIO;
-import java.awt.image.BufferedImage;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.List;
-import java.util.UUID;
-import java.util.stream.Collectors;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import lombok.extern.slf4j.Slf4j;
 
 
 @RestController
@@ -48,6 +50,9 @@ public class IssueController {
     @Autowired
     private UserService userService;
 
+    @Value("${image.server.path}")
+    private String imageServerPath;
+
     @Value("${user.proximityinkms}")
     private Double userProximity;
 
@@ -63,19 +68,21 @@ public class IssueController {
 //                .status(issueModel.getStatus())
 //                .build();
         Issue issue = new Issue();
-        BeanUtils.copyProperties(issueModel, issue, "images");
+        BeanUtils.copyProperties(issueModel, issue);
 
-        for(byte[] bytes : issueModel.getImages()){
-            try {
-                InputStream in = new ByteArrayInputStream(bytes);
-                BufferedImage bImageFromConvert = ImageIO.read(in);
-                String path = "/opt/images/" + issueModel.getTitle() + RandomStringUtils.random(10);
-                ImageIO.write(bImageFromConvert, "jpg", new File(path));
-                issue.getImages().add(path);
-            } catch (IOException e) {
-                log.error("error in saving image", e);
-            }
-        }
+//        BeanUtils.copyProperties(issueModel, issue, "images");
+
+//        for(byte[] bytes : issueModel.getImages()){
+//            try {
+//                InputStream in = new ByteArrayInputStream(bytes);
+//                BufferedImage bImageFromConvert = ImageIO.read(in);
+//                String path = "/opt/images/" + issueModel.getTitle() + RandomStringUtils.random(10);
+//                ImageIO.write(bImageFromConvert, "jpg", new File(path));
+//                issue.getImages().add(path);
+//            } catch (IOException e) {
+//                log.error("error in saving image", e);
+//            }
+//        }
 
         return issue;
     }
@@ -91,18 +98,23 @@ public class IssueController {
 
         IssueModel issueModel = new IssueModel();
         BeanUtils.copyProperties(issue, issueModel, "images");
-        for(String path: issue.getImages()){
-            try {
-                BufferedImage originalImage = ImageIO.read(new File(path));
-                ByteArrayOutputStream baos = new ByteArrayOutputStream();
-                ImageIO.write(originalImage, "jpg", baos);
-                baos.flush();
-                issueModel.getImages().add(baos.toByteArray());
-                baos.close();
-            } catch (IOException e) {
-                log.error("error in getting image", e);
-            }
+        if(!CollectionUtils.isEmpty(issue.getImages())){
+            issueModel.setImages(issue.getImages().stream().map(u -> imageServerPath + u).collect(Collectors.toList()));
         }
+
+//        BeanUtils.copyProperties(issue, issueModel, "images");
+//        for(String path: issue.getImages()){
+//            try {
+//                BufferedImage originalImage = ImageIO.read(new File(path));
+//                ByteArrayOutputStream baos = new ByteArrayOutputStream();
+//                ImageIO.write(originalImage, "jpg", baos);
+//                baos.flush();
+//                issueModel.getImages().add(baos.toByteArray());
+//                baos.close();
+//            } catch (IOException e) {
+//                log.error("error in getting image", e);
+//            }
+//        }
         return issueModel;
     }
 
@@ -113,31 +125,6 @@ public class IssueController {
         log.info("getAll");
         Page<Issue> issues = issueService.getAllIssues(page, size);
         return new PageImpl<>(issues.getContent().stream().map(issue->convertToWebModel(issue)).collect(Collectors.toList()), issues.getPageable(), issues.getTotalElements());
-    }
-
-    @RequestMapping(method = RequestMethod.GET, value = "/image",
-            produces = MediaType.APPLICATION_JSON_VALUE)
-    @ApiOperation(value = "image")
-    public String image() throws IOException {
-        //log.info(System.getProperty("java.class.path"));
-        byte[] imageInByte;
-        BufferedImage originalImage = ImageIO.read(new File(
-                "/opt/images/1.jpg"));
-
-        // convert BufferedImage to byte array
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        ImageIO.write(originalImage, "jpg", baos);
-        baos.flush();
-        imageInByte = baos.toByteArray();
-        baos.close();
-
-        // convert byte array back to BufferedImage
-        InputStream in = new ByteArrayInputStream(imageInByte);
-        BufferedImage bImageFromConvert = ImageIO.read(in);
-
-        ImageIO.write(bImageFromConvert, "jpg", new File(
-                "/opt/images/2.jpg"));
-        return "";
     }
 
   @RequestMapping(method = RequestMethod.POST, value = "/save", produces =
@@ -188,4 +175,28 @@ public class IssueController {
     }
 
 
+    @RequestMapping(method = RequestMethod.GET, value = "/image",
+            produces = MediaType.APPLICATION_JSON_VALUE)
+    @ApiOperation(value = "image")
+    public String image() throws IOException {
+        //log.info(System.getProperty("java.class.path"));
+        byte[] imageInByte;
+        BufferedImage originalImage = ImageIO.read(new File(
+                "/opt/images/1.jpg"));
+
+        // convert BufferedImage to byte array
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        ImageIO.write(originalImage, "jpg", baos);
+        baos.flush();
+        imageInByte = baos.toByteArray();
+        baos.close();
+
+        // convert byte array back to BufferedImage
+        InputStream in = new ByteArrayInputStream(imageInByte);
+        BufferedImage bImageFromConvert = ImageIO.read(in);
+
+        ImageIO.write(bImageFromConvert, "jpg", new File(
+                "/opt/images/2.jpg"));
+        return "";
+    }
 }
