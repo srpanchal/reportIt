@@ -14,11 +14,13 @@ import org.springframework.data.geo.Metrics;
 import org.springframework.data.geo.Point;
 import org.springframework.data.mongodb.core.geo.GeoJsonPoint;
 import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
@@ -28,6 +30,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 
@@ -47,6 +50,9 @@ public class IssueController {
 
     @Value("${user.proximityinkms}")
     private Double userProximity;
+
+    @Value(("${image.directory}"))
+    private String imageDirectory;
 
     private Issue convertToEntity(IssueModel issueModel) {
 //        return Issue.builder()
@@ -151,6 +157,22 @@ public class IssueController {
       @RequestParam(value = "long", defaultValue = "77.64905") Double longitude, @RequestParam(value = "d", defaultValue = "5") double distance, @RequestParam(defaultValue = "0") Integer page, @RequestParam(defaultValue = "10") Integer size) {
     return this.issueService.getAllIssuesByLocation(new Point(latitude, longitude),
         new Distance(distance, Metrics.KILOMETERS), page, size);
+  }
+
+  @PostMapping("/uploadFile")
+  public String singleFileUpload( @RequestParam("file") MultipartFile file){
+      int imageCode = UUID.randomUUID().hashCode();
+
+      try {
+          byte[] bytes=file.getBytes();
+          InputStream in = new ByteArrayInputStream(bytes);
+          BufferedImage bImageFromConvert = ImageIO.read(in);
+          ImageIO.write(bImageFromConvert, "jpg", new File(
+              imageDirectory+imageCode+".jpg"));
+      } catch (IOException e) {
+          e.printStackTrace();
+      }
+        return  imageCode+".jpg";
   }
 
   @RequestMapping(method = RequestMethod.GET, value = "/upvote")
