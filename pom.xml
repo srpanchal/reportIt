@@ -89,11 +89,11 @@
                 <artifactId>google-cloud-vision</artifactId>
                 <version>1.64.0</version>
             </dependency>
-            	<dependency>
+            	<!--dependency>
 				<groupId>com.filter.textcorrector</groupId>
 				<artifactId>checkmate</artifactId>
 				<version>1.0</version>
-			</dependency>
+			</-dependency-->
         </dependencies>
     </dependencyManagement>
 </project>

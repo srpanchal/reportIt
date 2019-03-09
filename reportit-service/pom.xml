@@ -49,10 +49,10 @@
             <artifactId>mail</artifactId>
             <version>1.5.0-b01</version>
         </dependency>
-        <dependency>
+        <!--dependency>
             <groupId>com.filter.textcorrector</groupId>
             <artifactId>checkmate</artifactId>
-        </dependency>
+        </dependency-->
         <dependency>
             <groupId>com.google.cloud</groupId>
             <artifactId>google-cloud-vision</artifactId>
