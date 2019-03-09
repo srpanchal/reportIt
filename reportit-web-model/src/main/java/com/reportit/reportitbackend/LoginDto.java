@@ -20,4 +20,5 @@ public class LoginDto extends ResponseModel implements Serializable{
     private String phoneNo;
     private String location;
     private String userId;
+    private String gcmToken;
 }

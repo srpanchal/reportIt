@@ -29,6 +29,8 @@ public class User {
     private String password;
     private String fCMToken;
     private GeoJsonPoint location;
+    private String email;
+    private String phoneNo;
 
     @DBRef
     private List<Issue> issuesReported;
