@@ -10,7 +10,7 @@ public interface UserService {
     void addReportedIssue(String userId, String isuueId);
     void addReportedIssue(String userId, Issue isuue);
     String loginUser(String username, String password);
-    String signupUser(String username, String password, String email, String phoneNo, String location,String gcmToken);
+    String signupUser(String username, String password, String email, String phoneNo, String location,String gcmToken, double latitude, double longitude);
     List<String> getFCMTokensOfNearbyUsers(GeoJsonPoint location, double distance);
     void updateUserLocation(String userId, String location);
 }

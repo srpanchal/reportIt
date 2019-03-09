@@ -1,5 +1,6 @@
 package com.reportit.reportitbackend;
 
+import com.fasterxml.jackson.annotation.JsonAlias;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -19,5 +20,8 @@ public class LoginDto extends ResponseModel implements Serializable{
     private String phoneNo;
     private String location;
     private String userId;
+    @JsonAlias("fcm_token")
     private String gcmToken;
+    private double latitude;
+    private double longitude;
 }

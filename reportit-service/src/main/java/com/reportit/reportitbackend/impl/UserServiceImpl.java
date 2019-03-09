@@ -60,7 +60,7 @@ public class UserServiceImpl implements UserService {
   }
 
   @Override
-  public String signupUser(String username, String password, String email, String phoneNo, String location,String gcmToken) {
+  public String signupUser(String username, String password, String email, String phoneNo, String location,String gcmToken, double latitude, double longitude) {
     User user = userRepository.findByUserName(username);
     if(user != null){
       return null;
@@ -71,6 +71,7 @@ public class UserServiceImpl implements UserService {
     user.setFCMToken(gcmToken);
     user.setEmail(email);
     user.setPhoneNo(phoneNo);
+    user.setLocation(new GeoJsonPoint(longitude, latitude));
     user = userRepository.save(user);
     return user.getId();
   }

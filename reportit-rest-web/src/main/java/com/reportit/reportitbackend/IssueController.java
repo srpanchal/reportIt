@@ -14,6 +14,7 @@ import org.springframework.data.geo.Point;
 import org.springframework.data.mongodb.core.geo.GeoJsonPoint;
 import org.springframework.http.MediaType;
 import org.springframework.util.CollectionUtils;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -147,8 +148,8 @@ public class IssueController {
         new Distance(distance, Metrics.KILOMETERS), page, size);
   }
 
-  @PostMapping("/uploadFile")
-  public String multipleFileUpload( @RequestBody Map<String, MultipartFile> files){
+  @PostMapping(value = "/uploadFile")
+  public String multipleFileUpload( @RequestParam Map<String, MultipartFile> files){
       List<String> fileNames = new ArrayList<>();
 
       for(MultipartFile file : files.values()) {

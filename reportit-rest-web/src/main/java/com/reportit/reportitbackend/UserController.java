@@ -68,7 +68,7 @@ public class UserController {
   @PostMapping("/signup")
   public LoginDto signup(@RequestBody LoginDto loginDto){
     log.info("signup " + loginDto);
-     String userId = userService.signupUser(loginDto.getUsername(), loginDto.getPassword(), loginDto.getEmail(), loginDto.getPhoneNo(), loginDto.getLocation(), loginDto.getGcmToken());
+     String userId = userService.signupUser(loginDto.getUsername(), loginDto.getPassword(), loginDto.getEmail(), loginDto.getPhoneNo(), loginDto.getLocation(), loginDto.getGcmToken(), loginDto.getLatitude(), loginDto.getLongitude());
      loginDto.setUserId(userId);
      return loginDto;
   }
