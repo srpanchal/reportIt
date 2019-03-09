@@ -8,9 +8,11 @@ import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.annotation.Version;
 import org.springframework.data.mongodb.core.mapping.DBRef;
+import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-import java.util.Date;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import java.util.List;
 
 @Data
@@ -21,26 +23,14 @@ public class User {
 
     public static final String COLLECTION_NAME_USER = "user_collection";
 
-    @Version
-    private Long version;
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    private String id;
 
-    @CreatedDate
-    private Date createdDate;
-
-    @CreatedBy
-    private String createdBy;
-
-    @LastModifiedDate
-    private Date updatedDate;
-
-    private String username;
-    private String accessToken;
-    private String fBUserId;
+    private String userName;
+    private String profilePic;
 
     @DBRef
-    private List<Issue>  issuesReported;
-
-
-    //location
+    private List<Issue> issuesReported;
 
 }
