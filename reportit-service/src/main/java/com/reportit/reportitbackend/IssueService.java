@@ -7,7 +7,7 @@ import java.util.List;
 
 public interface IssueService {
 
-    void saveIssue(Issue issue);
+    Issue saveIssue(Issue issue);
 
     List<Issue> getAllIssues();
 

@@ -8,6 +8,7 @@ import com.reportit.reportitbackend.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -30,9 +31,18 @@ public class UserServiceImpl implements UserService {
   }
 
   @Override
-  public void addReportedIssue(String userId, String isuueId) {
-        Issue issue = issueRepository.findById(isuueId).get();
-        User user = userRepository.findById(userId).get();
-        user.getIssuesReported().add(issue);
+  public void addReportedIssue(String userId, String issueId) {
+        Issue issue = issueRepository.findById(issueId).get();
+        addReportedIssue(userId, issue);
+  }
+
+  @Override
+  public void addReportedIssue(String userId, Issue issue) {
+    User user = userRepository.findById(userId).get();
+    if(user.getIssuesReported() == null) {
+      user.setIssuesReported(new ArrayList<>());
+    }
+    user.getIssuesReported().add(issue);
+    userRepository.save(user);
   }
 }

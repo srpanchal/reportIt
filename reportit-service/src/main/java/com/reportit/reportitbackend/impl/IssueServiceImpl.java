@@ -17,8 +17,8 @@ public class IssueServiceImpl implements IssueService {
     private IssueRepository issueRepository;
 
     @Override
-    public void saveIssue(Issue issue) {
-        issueRepository.save(issue);
+    public Issue saveIssue(Issue issue) {
+        return issueRepository.save(issue);
     }
 
     @Override

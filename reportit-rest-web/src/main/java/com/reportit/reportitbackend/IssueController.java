@@ -23,7 +23,6 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
-import java.util.UUID;
 import java.util.stream.Collectors;
 
 
@@ -36,6 +35,9 @@ public class IssueController {
 
     @Autowired
     private IssueService issueService;
+
+    @Autowired
+    private UserService userService;
 
     private Issue convertToEntity(IssueModel issueModel) {
 //        return Issue.builder()
@@ -123,9 +125,10 @@ public class IssueController {
   @RequestMapping(method = RequestMethod.POST, value = "/save", produces =
       MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
   public void saveIssue(@RequestBody Issue issue, @RequestParam("lat") double latitude,
-      @RequestParam("long") double longitude) {
+      @RequestParam("long") double longitude, @RequestParam String userId) {
     issue.setLocation(new GeoJsonPoint(longitude, latitude));
     issueService.saveIssue(issue);
+    userService.addReportedIssue(userId, issue);
   }
 
   @RequestMapping(method = RequestMethod.GET, value = "/get/nearest", produces =
