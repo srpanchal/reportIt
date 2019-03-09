@@ -12,4 +12,8 @@ public interface IssueService {
     List<Issue> getAllIssues();
 
     List<Issue> getAllIssuesByLocation(Point p, Distance d);
+
+    void upvote(String id);
+
+    void downvote(String id);
 }

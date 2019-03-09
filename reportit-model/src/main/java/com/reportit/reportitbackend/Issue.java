@@ -47,14 +47,6 @@ public class Issue {
     private List<String> images = new ArrayList<>();
     private StatusEnum status;
     private String category;
-    private Long votes;
+    private long votes = 0L;
     private GeoJsonPoint location;
-
-    public void upvote() {
-      this.votes += 1;
-    }
-
-    public void downvote() {
-      this.votes -= 1;
-    }
 }
