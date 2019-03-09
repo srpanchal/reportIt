@@ -6,11 +6,10 @@ import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.CreatedBy;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.Id;
-import org.springframework.data.annotation.LastModifiedBy;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.annotation.Version;
+import org.springframework.data.mongodb.core.geo.GeoJsonPoint;
 import org.springframework.data.mongodb.core.mapping.Document;
-import org.springframework.data.mongodb.core.mapping.Field;
 
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -45,5 +44,14 @@ public class Issue {
     private List<String> images;
     private StatusEnum status;
     private String category;
+    private Long votes;
+    private GeoJsonPoint location;
 
+    public void upvote() {
+      this.votes += 1;
+    }
+
+    public void downvote() {
+      this.votes += 1;
+    }
 }
