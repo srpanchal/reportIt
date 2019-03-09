@@ -50,6 +50,7 @@ public class UserController {
 
     @PostMapping("/login")
     public LoginDto login(@RequestBody  LoginDto loginDto){
+    log.info("login " + loginDto);
       String userId =  userService.loginUser(loginDto.getUsername(), loginDto.getPassword());
       handleStatusCode(loginDto, userId);
 
@@ -66,6 +67,7 @@ public class UserController {
 
   @PostMapping("/signup")
   public LoginDto signup(@RequestBody LoginDto loginDto){
+    log.info("signup " + loginDto);
      String userId = userService.signupUser(loginDto.getUsername(), loginDto.getPassword(), loginDto.getEmail(), loginDto.getPhoneNo(), loginDto.getLocation(), loginDto.getGcmToken());
      loginDto.setUserId(userId);
      return loginDto;
