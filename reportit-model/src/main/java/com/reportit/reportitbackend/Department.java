@@ -2,6 +2,7 @@ package com.reportit.reportitbackend;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.CreatedBy;
 import org.springframework.data.annotation.CreatedDate;
@@ -20,6 +21,7 @@ import java.util.Map;
 @NoArgsConstructor
 @AllArgsConstructor
 @Document(collection = Department.COLLECTION_NAME_DEPARTMENT)
+@EqualsAndHashCode
 public class Department {
     public static final String COLLECTION_NAME_DEPARTMENT = "department_collection";
 

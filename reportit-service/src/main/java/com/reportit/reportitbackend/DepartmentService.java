@@ -9,4 +9,6 @@ public interface DepartmentService {
     List<Department> getAllDepartments();
 
     List<Department> getByCategoryAndRegion(String category, String region);
+
+    List<Department> getRelevantDepts(String message);
 }
