@@ -23,10 +23,11 @@ public class IssueModel implements Serializable {
     private Date updatedDate;
     private String title;
     private String description;
-    private List<byte[]> images = new ArrayList<>();
+    private List<String> images = new ArrayList<>();
     private StatusEnum status;
     private String category;
     private GeoJsonPoint location;
-    private int upvotes;
+    private long votes = 0L;
+    private String address;
 
 }

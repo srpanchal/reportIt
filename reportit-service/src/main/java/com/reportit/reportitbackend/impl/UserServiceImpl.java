@@ -6,9 +6,14 @@ import com.reportit.reportitbackend.User;
 import com.reportit.reportitbackend.UserRepository;
 import com.reportit.reportitbackend.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.geo.Distance;
+import org.springframework.data.geo.Metrics;
+import org.springframework.data.mongodb.core.geo.GeoJsonPoint;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -30,9 +35,54 @@ public class UserServiceImpl implements UserService {
   }
 
   @Override
-  public void addReportedIssue(String userId, String isuueId) {
-        Issue issue = issueRepository.findById(isuueId).get();
-        User user = userRepository.findById(userId).get();
-        user.getIssuesReported().add(issue);
+  public void addReportedIssue(String userId, String issueId) {
+        Issue issue = issueRepository.findById(issueId).get();
+        addReportedIssue(userId, issue);
+  }
+
+  @Override
+  public void addReportedIssue(String userId, Issue issue) {
+    User user = userRepository.findById(userId).get();
+    if(user.getIssuesReported() == null) {
+      user.setIssuesReported(new ArrayList<>());
+    }
+    user.getIssuesReported().add(issue);
+    userRepository.save(user);
+  }
+
+  @Override
+  public String loginUser(String username, String password) {
+    User user = userRepository.findByUserName(username);
+    if(user != null && password.equals(user.getPassword())){
+      return user.getId();
+    }
+    return null;
+  }
+
+  @Override
+  public String signupUser(String username, String password, String email, String phoneNo, String location,String gcmToken) {
+    User user = userRepository.findByUserName(username);
+    if(user != null){
+      return null;
+    }
+    user = new User();
+    user.setUserName(username);
+    user.setPassword(password);
+    user.setFCMToken(gcmToken);
+    user.setEmail(email);
+    user.setPhoneNo(phoneNo);
+    user = userRepository.save(user);
+    return user.getId();
+  }
+
+  @Override
+  public List<String> getFCMTokensOfNearbyUsers(GeoJsonPoint location, double distance) {
+    return userRepository.findByLocationNear(location, new Distance(distance, Metrics.KILOMETERS)).stream().map(User::getFCMToken).collect(
+        Collectors.toList());
+  }
+
+  @Override
+  public void updateUserLocation(String userId, String location) {
+
   }
 }

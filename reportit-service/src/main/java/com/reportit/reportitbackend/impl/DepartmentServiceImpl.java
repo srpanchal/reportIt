@@ -23,4 +23,9 @@ public class DepartmentServiceImpl implements DepartmentService{
     public List<Department> getAllDepartments() {
         return departmentRepository.findAll();
     }
+
+    @Override
+    public List<Department> getByCategoryAndRegion(String category, String region) {
+        return departmentRepository.findByIssueTypesContainingAndRegionContaining(category, region);
+    }
 }
