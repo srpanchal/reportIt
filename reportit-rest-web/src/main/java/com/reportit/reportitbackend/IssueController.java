@@ -1,5 +1,7 @@
 package com.reportit.reportitbackend;
 
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.beans.BeanUtils;
@@ -23,19 +25,22 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
-import java.util.UUID;
 import java.util.stream.Collectors;
 
 
 @RestController
 @Slf4j
 @RequestMapping(value = (IssueController.BASE_PATH))
+@Api(value = "Issue controller")
 public class IssueController {
 
     public static final String BASE_PATH = "/issue";
 
     @Autowired
     private IssueService issueService;
+
+    @Autowired
+    private UserService userService;
 
     private Issue convertToEntity(IssueModel issueModel) {
 //        return Issue.builder()
@@ -52,7 +57,7 @@ public class IssueController {
             try {
                 InputStream in = new ByteArrayInputStream(bytes);
                 BufferedImage bImageFromConvert = ImageIO.read(in);
-                String path = "images/" + issueModel.getTitle() + RandomStringUtils.random(10);
+                String path = "/opt/images/" + issueModel.getTitle() + RandomStringUtils.random(10);
                 ImageIO.write(bImageFromConvert, "jpg", new File(path));
                 issue.getImages().add(path);
             } catch (IOException e) {
@@ -91,6 +96,7 @@ public class IssueController {
 
     @RequestMapping(method = RequestMethod.GET, value = "/getAll",
             produces = MediaType.APPLICATION_JSON_VALUE)
+    @ApiOperation(value = "getAll")
     public List<IssueModel> getAllIssues(){
         log.info("getAll");
         return issueService.getAllIssues().stream().map(this::convertToWebModel).collect(Collectors.toList());
@@ -98,6 +104,7 @@ public class IssueController {
 
     @RequestMapping(method = RequestMethod.GET, value = "/image",
             produces = MediaType.APPLICATION_JSON_VALUE)
+    @ApiOperation(value = "image")
     public String image() throws IOException {
         //log.info(System.getProperty("java.class.path"));
         byte[] imageInByte;
@@ -122,17 +129,32 @@ public class IssueController {
 
   @RequestMapping(method = RequestMethod.POST, value = "/save", produces =
       MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
+  @ApiOperation(value = "save")
   public void saveIssue(@RequestBody Issue issue, @RequestParam("lat") double latitude,
-      @RequestParam("long") double longitude) {
+      @RequestParam("long") double longitude, @RequestParam String userId) {
     issue.setLocation(new GeoJsonPoint(longitude, latitude));
     issueService.saveIssue(issue);
+    userService.addReportedIssue(userId, issue);
   }
 
   @RequestMapping(method = RequestMethod.GET, value = "/get/nearest", produces =
       MediaType.APPLICATION_JSON_VALUE)
+  @ApiOperation(value = "nearest")
   public final List<Issue> getLocationsByProximity(@RequestParam("lat") Double latitude,
       @RequestParam("long") Double longitude, @RequestParam("d") double distance) {
     return this.issueService.getAllIssuesByLocation(new Point(latitude, longitude),
         new Distance(distance, Metrics.KILOMETERS));
   }
+
+  @RequestMapping(method = RequestMethod.GET, value = "/upvote")
+  @ApiOperation(value = "upvote")
+    public void upvote(@RequestParam String id){
+        issueService.upvote(id);
+  }
+
+    @RequestMapping(method = RequestMethod.GET, value = "/downvote")
+    @ApiOperation(value = "downvote")
+    public void downvote(@RequestParam String id){
+        issueService.downvote(id);
+    }
 }

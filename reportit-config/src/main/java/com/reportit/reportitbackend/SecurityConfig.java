@@ -21,10 +21,14 @@ class SecurityConfig extends WebSecurityConfigurerAdapter {
 
   @Override
     protected void configure(HttpSecurity http) throws Exception {
-        http.authorizeRequests()
-                .antMatchers(AUTH_WHITELIST).permitAll()
-        .anyRequest().authenticated().and().logout().logoutSuccessUrl("/");
-        http.oauth2Login().loginPage("/login").defaultSuccessUrl("/dashboard");
+//        http.authorizeRequests()
+//                .antMatchers(AUTH_WHITELIST).permitAll()
+//        .anyRequest().authenticated().and().logout().logoutSuccessUrl("/");
+//        http.oauth2Login().loginPage("/login").defaultSuccessUrl("/dashboard");
+      http.authorizeRequests()
+              .antMatchers(AUTH_WHITELIST).permitAll()
+              .antMatchers("/**/*").permitAll();
+      http.cors().and().csrf().disable();
     }
 
   }

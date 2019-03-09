@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.data.mongodb.core.geo.GeoJsonPoint;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -25,6 +26,8 @@ public class IssueModel implements Serializable {
     private List<byte[]> images = new ArrayList<>();
     private StatusEnum status;
     private String category;
-    private int upvotes;
+    private GeoJsonPoint location;
+    private long votes = 0L;
+    private String address;
 
 }
