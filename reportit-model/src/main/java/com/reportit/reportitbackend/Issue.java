@@ -49,4 +49,5 @@ public class Issue {
     private String category;
     private long votes = 0L;
     private GeoJsonPoint location;
+    private String address;
 }
