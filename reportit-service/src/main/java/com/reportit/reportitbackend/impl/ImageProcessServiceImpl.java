@@ -12,11 +12,7 @@ import com.google.protobuf.ByteString;
 import com.reportit.reportitbackend.ImageProcessService;
 import org.springframework.stereotype.Service;
 
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -33,7 +29,7 @@ import java.util.stream.Collectors;
         Arrays.asList(Likelihood.POSSIBLE, Likelihood.VERY_LIKELY, Likelihood.LIKELY);
 
     @Override
-    public List<String> getImageLabels(String fileName) throws IOException {
+    public List<String> getImageLabels(byte []imageBytes) throws IOException {
 
         List<String> labels = Collections.emptyList();
         // Instantiates a client
@@ -41,9 +37,7 @@ import java.util.stream.Collectors;
 
             // The path to the image file to annotate
             // Reads the image file into memory
-            Path path = Paths.get(fileName);
-            byte[] data = Files.readAllBytes(path);
-            ByteString imgBytes = ByteString.copyFrom(data);
+            ByteString imgBytes = ByteString.copyFrom(imageBytes);
 
             // Builds the image annotation request
             //   List<AnnotateImageRequest> requests = new ArrayList<>();
@@ -79,8 +73,8 @@ import java.util.stream.Collectors;
     }
 
     @Override
-    public boolean isNotSafe(String filePath) throws IOException {
-        ByteString imgBytes = ByteString.readFrom(new FileInputStream(filePath));
+    public boolean isNotSafe(byte []imageBytes) throws IOException {
+        ByteString imgBytes = ByteString.copyFrom(imageBytes);
         Image img = Image.newBuilder().setContent(imgBytes).build();
         Feature feat = Feature.newBuilder().setType(Feature.Type.SAFE_SEARCH_DETECTION).build();
         AnnotateImageRequest request =
