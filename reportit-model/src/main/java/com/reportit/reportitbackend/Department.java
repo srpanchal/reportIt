@@ -7,19 +7,18 @@ import org.springframework.data.annotation.CreatedBy;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.annotation.Version;
-import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Document(collection = User.COLLECTION_NAME_USER)
-public class User {
-
-    public static final String COLLECTION_NAME_USER = "user_collection";
+@Document(collection = Department.COLLECTION_NAME_DEPARTMENT)
+public class Department {
+    public static final String COLLECTION_NAME_DEPARTMENT = "department_collection";
 
     @Version
     private Long version;
@@ -33,14 +32,13 @@ public class User {
     @LastModifiedDate
     private Date updatedDate;
 
-    private String username;
-    private String accessToken;
-    private String fBUserId;
+    private String name;
 
-    @DBRef
-    private List<Issue>  issuesReported;
+    private String description;
 
+    private List<String> issueTypes;
 
-    //location
+    private Map<PlatformEnum, String> contactInfo;
 
+    private List<String> region;
 }
