@@ -6,6 +6,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.geo.Distance;
 import org.springframework.data.geo.Metrics;
 import org.springframework.data.geo.Point;
@@ -41,6 +42,9 @@ public class IssueController {
 
     @Autowired
     private UserService userService;
+
+    @Value("${user.proximityinkms}")
+    private Double userProximity;
 
     private Issue convertToEntity(IssueModel issueModel) {
 //        return Issue.builder()
@@ -135,6 +139,7 @@ public class IssueController {
     issue.setLocation(new GeoJsonPoint(longitude, latitude));
     issueService.saveIssue(issue);
     userService.addReportedIssue(userId, issue);
+    userService.getFCMTokensOfNearbyUsers(issue.getLocation(), userProximity);
   }
 
   @RequestMapping(method = RequestMethod.GET, value = "/get/nearest", produces =
