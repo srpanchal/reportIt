@@ -31,19 +31,18 @@ public class PublisherServiceImpl implements PublisherService {
   @Autowired
   private Session emailSession;
 
-  public boolean sendTweet(String tweet, String imageUrl) {
-    boolean isSent = false;
+  public String sendTweet(String tweet, String imageUrl) {
+    String tweetURL = null;
     try {
       File file = new File("temp.jpeg");
       FileUtils.copyURLToFile(new URL(imageUrl), file, 40000, 40000);
       StatusUpdate status = new StatusUpdate(tweet);
       status.setMedia(file);
-      twitter.updateStatus(status);
-      isSent = true;
+      tweetURL = twitter.updateStatus(status).getMediaEntities()[0].getExpandedURL();
     } catch (IOException | TwitterException e) {
       log.error("Failed to send tweet {} , imageUrl : {}", tweet, imageUrl, e);
     }
-    return isSent;
+    return tweetURL;
   }
 
   public boolean sendEmailWithAttachment(String toEmail, String fromEmail, String subject,
@@ -69,5 +68,4 @@ public class PublisherServiceImpl implements PublisherService {
     }
     return sent;
   }
-
 }
