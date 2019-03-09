@@ -6,10 +6,14 @@ import com.reportit.reportitbackend.User;
 import com.reportit.reportitbackend.UserRepository;
 import com.reportit.reportitbackend.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.geo.Distance;
+import org.springframework.data.geo.Metrics;
+import org.springframework.data.mongodb.core.geo.GeoJsonPoint;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -66,5 +70,11 @@ public class UserServiceImpl implements UserService {
     user.setPassword(password);
     user = userRepository.save(user);
     return user.getId();
+  }
+
+  @Override
+  public List<String> getFCMTokensOfNearbyUsers(GeoJsonPoint location, double distance) {
+    return userRepository.findByLocationNear(location, new Distance(distance, Metrics.KILOMETERS)).stream().map(User::getFCMToken).collect(
+        Collectors.toList());
   }
 }

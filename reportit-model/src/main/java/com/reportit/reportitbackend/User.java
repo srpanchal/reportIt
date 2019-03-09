@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.geo.GeoJsonPoint;
 import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 
@@ -26,6 +27,8 @@ public class User {
     private String userName;
     private String profilePic;
     private String password;
+    private String fCMToken;
+    private GeoJsonPoint location;
 
     @DBRef
     private List<Issue> issuesReported;

@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.NonNull;
 
 import java.io.Serializable;
 
@@ -17,4 +18,9 @@ public class LoginDto implements Serializable{
 
     private String username;
     private String password;
+    private String email;
+    private String phoneNo;
+    @NonNull
+    private String location;
+    private String userId;
 }
