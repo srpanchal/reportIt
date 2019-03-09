@@ -17,4 +17,6 @@ public interface IssueService {
     long upvote(String id);
 
     long downvote(String id);
+
+    void updateIssueStatus(String issueID, StatusEnum status);
 }

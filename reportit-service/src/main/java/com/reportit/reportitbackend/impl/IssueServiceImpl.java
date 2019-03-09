@@ -7,6 +7,7 @@ import com.reportit.reportitbackend.IssueRepository;
 import com.reportit.reportitbackend.IssueService;
 import com.reportit.reportitbackend.PlatformEnum;
 import com.reportit.reportitbackend.PublisherService;
+import com.reportit.reportitbackend.StatusEnum;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -23,8 +24,10 @@ import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -53,10 +56,12 @@ public class IssueServiceImpl implements IssueService {
 
     @Override
     public Page<Issue> getAllIssues(Integer page, Integer size) {
+        List<StatusEnum> statusEnums = new ArrayList<>();
+        statusEnums.add(StatusEnum.REJECTED);
         if(page != null || size != null){
-            return issueRepository.findAll(new PageRequest(page, size));
+            return issueRepository.findByStatusNotIn(statusEnums,new PageRequest(page, size));
         }
-        List<Issue>  issues = issueRepository.findAll();
+        List<Issue>  issues = issueRepository.findByStatusNotIn(statusEnums);
         return new PageImpl<>(issues, new PageRequest(0, 10),issues.size());
     }
 
@@ -108,5 +113,15 @@ public class IssueServiceImpl implements IssueService {
                 new FindAndModifyOptions().returnNew(true), Issue.class);
 
         return issue.getVotes();
+    }
+
+    @Override
+    public void updateIssueStatus(String issueID, StatusEnum status) {
+        Optional<Issue> optional = issueRepository.findById(issueID);
+        if(optional.isPresent()){
+            Issue issue = optional.get();
+            issue.setStatus(status);
+            issueRepository.save(issue);
+        }
     }
 }

@@ -1,5 +1,6 @@
 package com.reportit.reportitbackend;
 
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.geo.Distance;
 import org.springframework.data.geo.Point;
@@ -12,4 +13,7 @@ import java.util.List;
 public interface IssueRepository extends MongoRepository<Issue, String> {
 
   List<Issue> findByLocationNear(Point p, Distance d, PageRequest pageRequest);
+
+  Page<Issue> findByStatusNotIn(List<StatusEnum> statusEnums, PageRequest request);
+  List<Issue> findByStatusNotIn(List<StatusEnum> statusEnums);
 }
