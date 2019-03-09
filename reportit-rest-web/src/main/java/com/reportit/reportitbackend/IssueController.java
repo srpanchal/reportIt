@@ -107,7 +107,7 @@ public class IssueController {
     public Page<IssueModel> getAllIssues(@RequestParam(required = false) Integer page, @RequestParam(required = false) Integer size){
         log.info("getAll");
         Page<Issue> issues = issueService.getAllIssues(page, size);
-        return new PageImpl<>(issues.getContent().stream().map(this::convertToWebModel).collect(Collectors.toList()), new PageRequest(page, size), issues.getTotalElements());
+        return new PageImpl<>(issues.getContent().stream().map(issue->convertToWebModel(issue)).collect(Collectors.toList()), new PageRequest(page, size), issues.getTotalElements());
     }
 
     @RequestMapping(method = RequestMethod.GET, value = "/image",
