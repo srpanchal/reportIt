@@ -7,4 +7,6 @@ public interface UserService {
     List<User> getAllUsers();
     void addReportedIssue(String userId, String isuueId);
     void addReportedIssue(String userId, Issue isuue);
+    String loginUser(String username, String password);
+    String signupUser(String username, String password);
 }

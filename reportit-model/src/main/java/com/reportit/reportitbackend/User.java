@@ -25,6 +25,7 @@ public class User {
 
     private String userName;
     private String profilePic;
+    private String password;
 
     @DBRef
     private List<Issue> issuesReported;

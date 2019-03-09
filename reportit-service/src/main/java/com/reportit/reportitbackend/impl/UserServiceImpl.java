@@ -45,4 +45,26 @@ public class UserServiceImpl implements UserService {
     user.getIssuesReported().add(issue);
     userRepository.save(user);
   }
+
+  @Override
+  public String loginUser(String username, String password) {
+    User user = userRepository.findByUserName(username);
+    if(user != null && password.equals(user.getPassword())){
+      return user.getId();
+    }
+    return null;
+  }
+
+  @Override
+  public String signupUser(String username, String password) {
+    User user = userRepository.findByUserName(username);
+    if(user != null){
+      return null;
+    }
+    user = new User();
+    user.setUserName(username);
+    user.setPassword(password);
+    user = userRepository.save(user);
+    return user.getId();
+  }
 }
