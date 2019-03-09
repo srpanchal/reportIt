@@ -14,7 +14,6 @@ import org.springframework.data.geo.Point;
 import org.springframework.data.mongodb.core.geo.GeoJsonPoint;
 import org.springframework.http.MediaType;
 import org.springframework.util.CollectionUtils;
-import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -32,6 +31,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -51,6 +51,9 @@ public class IssueController {
 
     @Autowired
     private UserService userService;
+
+    @Autowired
+    private TextProcessService textProcessService;
 
     @Value("${image.server.path}")
     private String imageServerPath;
@@ -131,12 +134,19 @@ public class IssueController {
 
   @RequestMapping(method = RequestMethod.POST, value = "/save", produces =
       MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
-  public void saveIssue(@RequestBody IssueModel issueModel) {
+  public Map<String, String> saveIssue(@RequestBody IssueModel issueModel) {
+        Map<String, String> map = new HashMap<>();
+      if(textProcessService.checkForProfanity(issueModel.getTitle()) || textProcessService.checkForProfanity(issueModel.getDescription())) {
+          map.put("status", "false");
+          map.put("message","Profane Content Detected");
+          return map;
+      }
         Issue issue = convertToEntity(issueModel);
     issue.setLocation(new GeoJsonPoint(issueModel.getLongitude(), issueModel.getLatitude()));
     issueService.saveIssue(issue);
     userService.addReportedIssue(issueModel.getUserId(), issue);
     userService.getFCMTokensOfNearbyUsers(issue.getLocation(), userProximity);
+   return map;
   }
 
   @RequestMapping(method = RequestMethod.GET, value = "/get/nearest", produces =

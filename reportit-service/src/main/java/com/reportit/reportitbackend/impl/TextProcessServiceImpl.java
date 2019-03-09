@@ -2,10 +2,13 @@ package com.reportit.reportitbackend.impl;
 
 import com.filter.textcorrector.TextFilter;
 import com.filter.textcorrector.spellchecking.Language;
+import com.reportit.reportitbackend.TextProcessService;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 
-public class TextProcessServiceImpl {
+@Service
+public class TextProcessServiceImpl implements TextProcessService{
 
     private TextFilter textFilter = new TextFilter(Language.ENGLISH);
 
