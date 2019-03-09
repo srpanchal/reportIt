@@ -14,6 +14,7 @@ import org.springframework.data.geo.Point;
 import org.springframework.data.mongodb.core.geo.GeoJsonPoint;
 import org.springframework.http.MediaType;
 import org.springframework.util.CollectionUtils;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -30,7 +31,9 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -128,12 +131,12 @@ public class IssueController {
 
   @RequestMapping(method = RequestMethod.POST, value = "/save", produces =
       MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
-  public void saveIssue(@RequestBody Issue issue, @RequestParam("lat") double latitude,
-      @RequestParam("long") double longitude, @RequestParam String userId) {
-    issue.setLocation(new GeoJsonPoint(longitude, latitude));
+  public void saveIssue(@RequestBody IssueModel issueModel) {
+        Issue issue = convertToEntity(issueModel);
+    issue.setLocation(new GeoJsonPoint(issueModel.getLongitude(), issueModel.getLatitude()));
     issueService.saveIssue(issue);
-    userService.addReportedIssue(userId, issue);
- //   userService.getFCMTokensOfNearbyUsers(issue.getLocation(), userProximity);
+    userService.addReportedIssue(issueModel.getUserId(), issue);
+    userService.getFCMTokensOfNearbyUsers(issue.getLocation(), userProximity);
   }
 
   @RequestMapping(method = RequestMethod.GET, value = "/get/nearest", produces =
@@ -145,20 +148,24 @@ public class IssueController {
         new Distance(distance, Metrics.KILOMETERS), page, size);
   }
 
-  @PostMapping("/uploadFile")
-  public String singleFileUpload( @RequestParam("file") MultipartFile file){
-      int imageCode = UUID.randomUUID().hashCode();
+  @PostMapping(value = "/uploadFile")
+  public String multipleFileUpload( @RequestParam Map<String, MultipartFile> files){
+      List<String> fileNames = new ArrayList<>();
 
-      try {
-          byte[] bytes=file.getBytes();
-          InputStream in = new ByteArrayInputStream(bytes);
-          BufferedImage bImageFromConvert = ImageIO.read(in);
-          ImageIO.write(bImageFromConvert, "jpg", new File(
-              imageDirectory+imageCode+".jpg"));
-      } catch (IOException e) {
-          e.printStackTrace();
+      for(MultipartFile file : files.values()) {
+          int imageCode = UUID.randomUUID().hashCode();
+
+          try {
+              byte[] bytes = file.getBytes();
+              InputStream in = new ByteArrayInputStream(bytes);
+              BufferedImage bImageFromConvert = ImageIO.read(in);
+              ImageIO.write(bImageFromConvert, "jpg", new File(imageDirectory + imageCode + ".jpg"));
+          } catch (IOException e) {
+              e.printStackTrace();
+          }
+          fileNames.add(imageCode + ".jpg");
       }
-        return  imageCode+".jpg";
+      return String.join(",",fileNames);
   }
 
   @RequestMapping(method = RequestMethod.GET, value = "/upvote")

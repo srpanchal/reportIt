@@ -69,28 +69,27 @@ public class PublisherServiceImpl implements PublisherService {
 
     @Override
     @Async
-  public boolean sendEmailWithAttachment(String toEmail, String fromEmail, String subject,
-      String content, String imagePath) {
+  public void sendEmailWithAttachment(String toEmail, String fromEmail, String subject,
+                                      String content, String imagePath) {
     log.info("Sending email: " + content + " to " + toEmail);
-    boolean sent = false;
     try {
       Message message = new MimeMessage(emailSession);
       message.setFrom(new InternetAddress(fromEmail));
       message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(toEmail));
       message.setSubject(subject);
       File file = new File(imagePath);
-      MimeBodyPart mimeBodyPart = new MimeBodyPart();
-      mimeBodyPart.setText(content, "utf-8");
-      mimeBodyPart.attachFile(file);
       Multipart multipart = new MimeMultipart();
-      multipart.addBodyPart(mimeBodyPart);
+      MimeBodyPart textBodyPart = new MimeBodyPart();
+      textBodyPart.setText(content);
+      MimeBodyPart attachmentBodyPart= new MimeBodyPart();
+      attachmentBodyPart.attachFile(file);
+      multipart.addBodyPart(textBodyPart);
+      multipart.addBodyPart(attachmentBodyPart);
       message.setContent(multipart);
       Transport.send(message);
-      sent = true;
     } catch (Exception e) {
       log.error("Failed to send email to {}", toEmail, e);
     }
-    return sent;
   }
 
     @Override
@@ -116,6 +115,5 @@ public class PublisherServiceImpl implements PublisherService {
     String response = restTemplate.postForObject(FIREBASE_API_URL, httpEntity, String.class);
     return response;
   }
-
 
 }

@@ -29,5 +29,7 @@ public class IssueModel implements Serializable {
     private GeoJsonPoint location;
     private long votes = 0L;
     private String address;
-
+    private Double latitude;
+    private Double longitude;
+    private String userId;
 }
