@@ -7,6 +7,9 @@ import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.geo.Distance;
 import org.springframework.data.geo.Metrics;
 import org.springframework.data.geo.Point;
@@ -101,9 +104,10 @@ public class IssueController {
     @RequestMapping(method = RequestMethod.GET, value = "/getAll",
             produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "getAll")
-    public List<IssueModel> getAllIssues(){
+    public Page<IssueModel> getAllIssues(@RequestParam(required = false) Integer page, @RequestParam(required = false) Integer size){
         log.info("getAll");
-        return issueService.getAllIssues().stream().map(this::convertToWebModel).collect(Collectors.toList());
+        Page<Issue> issues = issueService.getAllIssues(page, size);
+        return new PageImpl<>(issues.getContent().stream().map(this::convertToWebModel).collect(Collectors.toList()), new PageRequest(page, size), issues.getTotalElements());
     }
 
     @RequestMapping(method = RequestMethod.GET, value = "/image",

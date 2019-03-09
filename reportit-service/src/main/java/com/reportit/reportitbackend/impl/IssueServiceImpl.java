@@ -4,6 +4,9 @@ import com.reportit.reportitbackend.Issue;
 import com.reportit.reportitbackend.IssueRepository;
 import com.reportit.reportitbackend.IssueService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.geo.Distance;
 import org.springframework.data.geo.Point;
 import org.springframework.data.mongodb.core.FindAndModifyOptions;
@@ -30,8 +33,11 @@ public class IssueServiceImpl implements IssueService {
     }
 
     @Override
-    public List<Issue> getAllIssues() {
-        return issueRepository.findAll();
+    public Page<Issue> getAllIssues(Integer page, Integer size) {
+        if(page != null && size != null){
+            return issueRepository.findAll(new PageRequest(page, size));
+        }
+        return new PageImpl<>(issueRepository.findAll());
     }
 
     @Override
@@ -45,7 +51,7 @@ public class IssueServiceImpl implements IssueService {
         query.addCriteria(Criteria.where("_id").is(id));
 
         Update update = new Update();
-        update.inc("votes");
+        update.inc("upvotes");
 
         mongoOperations.findAndModify(
                 query, update,
@@ -58,7 +64,7 @@ public class IssueServiceImpl implements IssueService {
         query.addCriteria(Criteria.where("_id").is(id));
 
         Update update = new Update();
-        update.inc("votes", -1);
+        update.inc("downvotes", 1);
 
         mongoOperations.findAndModify(
                 query, update,
