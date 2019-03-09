@@ -61,8 +61,8 @@ public class IssueServiceImpl implements IssueService {
     }
 
     @Override
-    public List<Issue> getAllIssuesByLocation(Point p, Distance d) {
-      return issueRepository.findByLocationNear(p, d);
+    public List<Issue> getAllIssuesByLocation(Point p, Distance d, Integer page, Integer size) {
+      return issueRepository.findByLocationNear(p, d, new PageRequest(page, size));
     }
 
     @Override

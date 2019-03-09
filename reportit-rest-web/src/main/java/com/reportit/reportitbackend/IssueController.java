@@ -141,16 +141,16 @@ public class IssueController {
     issue.setLocation(new GeoJsonPoint(longitude, latitude));
     issueService.saveIssue(issue);
     userService.addReportedIssue(userId, issue);
-    userService.getFCMTokensOfNearbyUsers(issue.getLocation(), userProximity);
+ //   userService.getFCMTokensOfNearbyUsers(issue.getLocation(), userProximity);
   }
 
   @RequestMapping(method = RequestMethod.GET, value = "/get/nearest", produces =
       MediaType.APPLICATION_JSON_VALUE)
   @ApiOperation(value = "nearest")
-  public final List<Issue> getLocationsByProximity(@RequestParam("lat") Double latitude,
-      @RequestParam("long") Double longitude, @RequestParam("d") double distance) {
+  public final List<Issue> getLocationsByProximity(@RequestParam(value = "lat", defaultValue = "12.91835") Double latitude,
+      @RequestParam(value = "long", defaultValue = "77.64905") Double longitude, @RequestParam(value = "d", defaultValue = "5") double distance, @RequestParam(defaultValue = "0") Integer page, @RequestParam(defaultValue = "10") Integer size) {
     return this.issueService.getAllIssuesByLocation(new Point(latitude, longitude),
-        new Distance(distance, Metrics.KILOMETERS));
+        new Distance(distance, Metrics.KILOMETERS), page, size);
   }
 
   @RequestMapping(method = RequestMethod.GET, value = "/upvote")
