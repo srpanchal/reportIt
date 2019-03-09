@@ -53,6 +53,9 @@ public class IssueController {
     private UserService userService;
 
     @Autowired
+    private ImageProcessService imageProcessService;
+
+    @Autowired
     private TextProcessService textProcessService;
 
     @Value("${image.server.path}")
@@ -167,6 +170,10 @@ public class IssueController {
 
           try {
               byte[] bytes = file.getBytes();
+              if(imageProcessService.isNotSafe(bytes)){
+                  //return
+              }
+              imageProcessService.getImageLabels(bytes);
               InputStream in = new ByteArrayInputStream(bytes);
               BufferedImage bImageFromConvert = ImageIO.read(in);
               ImageIO.write(bImageFromConvert, "jpg", new File(imageDirectory + imageCode + ".jpg"));

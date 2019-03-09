@@ -10,23 +10,28 @@ import com.google.cloud.vision.v1.Likelihood;
 import com.google.cloud.vision.v1.SafeSearchAnnotation;
 import com.google.protobuf.ByteString;
 import com.reportit.reportitbackend.ImageProcessService;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
-@Service public class ImageProcessServiceImpl implements ImageProcessService {
+@Service
+public class ImageProcessServiceImpl implements ImageProcessService {
 
     private Float labellingThreshold = 0.5f;
 
-    private Boolean blockAdult = true;
-    private Boolean blockSpoof = true;
-    private Boolean blockViolence = true;
-    private List<Likelihood> blockLikelihood =
-        Arrays.asList(Likelihood.POSSIBLE, Likelihood.VERY_LIKELY, Likelihood.LIKELY);
+    @Value("${image.block.adult}")
+    private Boolean blockAdult;
+    @Value("${image.block.spoof}")
+    private Boolean blockSpoof;
+    @Value("${image.block.violence}")
+    private Boolean blockViolence;
+    @Value("${image.block.likelihood}")
+    private List<Likelihood> blockLikelihood;
+ //       Arrays.asList(Likelihood.POSSIBLE, Likelihood.VERY_LIKELY, Likelihood.LIKELY);
 
     @Override
     public List<String> getImageLabels(byte []imageBytes) throws IOException {
