@@ -55,6 +55,6 @@ public class Issue {
     }
 
     public void downvote() {
-      this.votes += 1;
+      this.votes -= 1;
     }
 }
