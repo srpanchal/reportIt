@@ -12,9 +12,11 @@ public interface IssueService {
 
     Page<Issue> getAllIssues(Integer page, Integer size);
 
-    List<Issue> getAllIssuesByLocation(Point p, Distance d);
+    List<Issue> getAllIssuesByLocation(Point p, Distance d, Integer page, Integer size);
 
     long upvote(String id);
 
     long downvote(String id);
+
+    void updateIssueStatus(String issueID, StatusEnum status);
 }

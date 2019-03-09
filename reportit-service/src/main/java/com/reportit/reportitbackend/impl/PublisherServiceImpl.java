@@ -6,6 +6,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import twitter4j.JSONException;
@@ -39,6 +40,7 @@ public class PublisherServiceImpl implements PublisherService {
     private static final String FIREBASE_API_URL = "https://fcm.googleapis.com/fcm/send";
 
   @Override
+  @Async
   public void sendTweet(String tweet, String imagePath) {
       log.info("Tweeting: " + tweet + " image: " + imagePath);
     String tweetURL = null;
@@ -58,7 +60,7 @@ public class PublisherServiceImpl implements PublisherService {
         str.append("Issue Reported: ").append(issue.getTitle()).append("\n")
                 .append(issue.getDescription()).append("\n")
                 .append("Location: ").append(issue.getAddress()).append("\n")
-                .append("Votes: ").append(issue.getVotes()).append("\n")
+                .append("This issue was upvoted by ").append(issue.getVotes()).append(" people.\n")
                 .append("Category: ").append(issue.getCategory()).append("\n")
                 .append("Please help in resolving this issue.").append("\n");
         tweeterHandles.forEach(t -> str.append("@").append(t).append(" "));
@@ -66,8 +68,10 @@ public class PublisherServiceImpl implements PublisherService {
     }
 
     @Override
+    @Async
   public boolean sendEmailWithAttachment(String toEmail, String fromEmail, String subject,
       String content, String imagePath) {
+    log.info("Sending email: " + content + " to " + toEmail);
     boolean sent = false;
     try {
       Message message = new MimeMessage(emailSession);
@@ -76,7 +80,7 @@ public class PublisherServiceImpl implements PublisherService {
       message.setSubject(subject);
       File file = new File(imagePath);
       MimeBodyPart mimeBodyPart = new MimeBodyPart();
-      mimeBodyPart.setContent(content, "text/html");
+      mimeBodyPart.setText(content, "utf-8");
       mimeBodyPart.attachFile(file);
       Multipart multipart = new MimeMultipart();
       multipart.addBodyPart(mimeBodyPart);

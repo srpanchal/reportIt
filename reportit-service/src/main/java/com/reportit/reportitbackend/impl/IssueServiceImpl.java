@@ -7,6 +7,7 @@ import com.reportit.reportitbackend.IssueRepository;
 import com.reportit.reportitbackend.IssueService;
 import com.reportit.reportitbackend.PlatformEnum;
 import com.reportit.reportitbackend.PublisherService;
+import com.reportit.reportitbackend.StatusEnum;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -23,8 +24,10 @@ import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -53,16 +56,18 @@ public class IssueServiceImpl implements IssueService {
 
     @Override
     public Page<Issue> getAllIssues(Integer page, Integer size) {
+        List<StatusEnum> statusEnums = new ArrayList<>();
+        statusEnums.add(StatusEnum.REJECTED);
         if(page != null || size != null){
-            return issueRepository.findAll(new PageRequest(page, size));
+            return issueRepository.findByStatusNotIn(statusEnums,new PageRequest(page, size));
         }
-        List<Issue>  issues = issueRepository.findAll();
+        List<Issue>  issues = issueRepository.findByStatusNotIn(statusEnums);
         return new PageImpl<>(issues, new PageRequest(0, 10),issues.size());
     }
 
     @Override
-    public List<Issue> getAllIssuesByLocation(Point p, Distance d) {
-      return issueRepository.findByLocationNear(p, d);
+    public List<Issue> getAllIssuesByLocation(Point p, Distance d, Integer page, Integer size) {
+      return issueRepository.findByLocationNear(p, d, new PageRequest(page, size));
     }
 
     @Override
@@ -76,14 +81,20 @@ public class IssueServiceImpl implements IssueService {
         Issue issue = mongoOperations.findAndModify(
                 query, update,
                 new FindAndModifyOptions().returnNew(true), Issue.class);
-        if(issue.getVotes() == upvotesLimit){
+        if(issue.getVotes() >= upvotesLimit){
             //tweet/email
             List<Department> departments = departmentService.getByCategoryAndRegion(issue.getCategory(), issue.getAddress());
-            if(!CollectionUtils.isEmpty(departments)){
+            if(!CollectionUtils.isEmpty(departments) && !CollectionUtils.isEmpty(issue.getImages())){
                 List<String> tweeterHandles = departments.stream().map(d -> d.getContactInfo()
                         .get(PlatformEnum.TWITTER)).filter(Objects::nonNull)
                         .collect(Collectors.toList());
-                publisherService.sendTweet(publisherService.createTweet(issue, tweeterHandles), issue.getImages().get(0));
+                String tweet = publisherService.createTweet(issue, tweeterHandles);
+                publisherService.sendTweet(tweet, issue.getImages().get(0));
+                List<String> emailIds = departments.stream().map(d -> d.getContactInfo()
+                        .get(PlatformEnum.EMAIL)).filter(Objects::nonNull)
+                        .collect(Collectors.toList());
+                publisherService.sendEmailWithAttachment(String.join(",", emailIds),
+                        "report.it.pls@gmail.com", "ReportIt Issue", tweet, issue.getImages().get(0));
             }
         }
         return issue.getVotes();
@@ -102,5 +113,15 @@ public class IssueServiceImpl implements IssueService {
                 new FindAndModifyOptions().returnNew(true), Issue.class);
 
         return issue.getVotes();
+    }
+
+    @Override
+    public void updateIssueStatus(String issueID, StatusEnum status) {
+        Optional<Issue> optional = issueRepository.findById(issueID);
+        if(optional.isPresent()){
+            Issue issue = optional.get();
+            issue.setStatus(status);
+            issueRepository.save(issue);
+        }
     }
 }
