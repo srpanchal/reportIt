@@ -53,10 +53,11 @@ public class IssueServiceImpl implements IssueService {
 
     @Override
     public Page<Issue> getAllIssues(Integer page, Integer size) {
-        if(page != null && size != null){
+        if(page != null || size != null){
             return issueRepository.findAll(new PageRequest(page, size));
         }
-        return new PageImpl<>(issueRepository.findAll());
+        List<Issue>  issues = issueRepository.findAll();
+        return new PageImpl<>(issues, new PageRequest(0, 10),issues.size());
     }
 
     @Override
