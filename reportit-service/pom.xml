@@ -50,6 +50,19 @@
             <version>1.5.0-b01</version>
         </dependency>
 
+        <dependency>
+            <groupId>me.xdrop</groupId>
+            <artifactId>fuzzywuzzy</artifactId>
+            <version>1.2.0</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.textrazor</groupId>
+            <artifactId>textrazor</artifactId>
+            <version>1.0.9</version>
+        </dependency>
+
+
     </dependencies>
 
 

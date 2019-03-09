@@ -46,4 +46,11 @@ public class DepartmentController {
     public List<Department> getByCategoryAndRegion(@RequestParam String category, @RequestParam String region){
         return departmentService.getByCategoryAndRegion(category, region);
     }
+
+  @RequestMapping(method = RequestMethod.POST, value = "/getRelevantDepts", produces =
+      MediaType.APPLICATION_JSON_VALUE)
+  @ApiOperation(value = "getByCategoryAndRegion")
+  public List<Department> getRelevantDepts(@RequestBody String message) {
+    return departmentService.getRelevantDepts(message);
+  }
 }
