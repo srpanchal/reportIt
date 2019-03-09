@@ -40,6 +40,7 @@ public class PublisherServiceImpl implements PublisherService {
   private static final String FIREBASE_SERVER_KEY = "AIzaSyD5amGeJnupzGXUF8SskKTMVTcl4bcVtE4";
   private static final String FIREBASE_API_URL = "https://fcm.googleapis.com/fcm/send";
 
+  @Override
   public String sendTweet(String tweet, String imageUrl) {
     String tweetURL = null;
     try {
@@ -54,6 +55,7 @@ public class PublisherServiceImpl implements PublisherService {
     return tweetURL;
   }
 
+  @Override
   public boolean sendEmailWithAttachment(String toEmail, String fromEmail, String subject,
       String content, String imageUrl) {
     boolean sent = false;
@@ -78,6 +80,7 @@ public class PublisherServiceImpl implements PublisherService {
     return sent;
   }
 
+  @Override
   public String sendPushNotifications(String title, String message, List<String> tokens) {
     RestTemplate restTemplate = new RestTemplate();
     HttpHeaders httpHeaders = new HttpHeaders();
@@ -100,4 +103,7 @@ public class PublisherServiceImpl implements PublisherService {
     String response = restTemplate.postForObject(FIREBASE_API_URL, httpEntity, String.class);
     return response;
   }
+
+
+
 }
